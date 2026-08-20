@@ -108,8 +108,13 @@ namespace services
             auto sequence = formatter.StartSequence();
 
             mbedtls_rsa_context& rsaContext = *mbedtls_pk_rsa(privateKey);
+#if defined(MBEDTLS_THREADING_C)
+            constexpr int32_t version = 1;
+#else
+            constexpr int32_t version = 0;
+#endif
 
-            sequence.Add(uint8_t(rsaContext.MBEDTLS_PRIVATE(ver)));
+            sequence.Add(uint8_t(version));
             sequence.AddBigNumber(MakeByteRange(rsaContext.MBEDTLS_PRIVATE(N)));
             sequence.AddBigNumber(MakeByteRange(rsaContext.MBEDTLS_PRIVATE(E)));
             sequence.AddBigNumber(MakeByteRange(rsaContext.MBEDTLS_PRIVATE(D)));
@@ -179,7 +184,10 @@ namespace services
                         auto publicKeyInfoSequence = tbsSequence.StartSequence();
                         mbedtls_x509_buf pk_oid;
 
-                        mbedtls_oid_get_oid_by_pk_alg(mbedtls_pk_get_type(&privateKey), const_cast<const char**>(reinterpret_cast<char**>(&pk_oid.p)), &pk_oid.len);
+                        // mbedTLS 4 de-published mbedtls_oid_get_oid_by_pk_alg; this path only ever writes RSA keys.
+                        static const char rsaEncryptionOid[] = MBEDTLS_OID_PKCS1 "\x01";
+                        pk_oid.p = reinterpret_cast<unsigned char*>(const_cast<char*>(rsaEncryptionOid));
+                        pk_oid.len = sizeof(rsaEncryptionOid) - 1;
 
                         X509AddAlgorithm(publicKeyInfoSequence, pk_oid);
 
