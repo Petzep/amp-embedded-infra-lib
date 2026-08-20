@@ -1,7 +1,6 @@
 #include "services/network/WebSocketServerConnectionObserver.hpp"
 #include "infra/event/EventDispatcherWithWeakPtr.hpp"
 #include "infra/stream/StringOutputStream.hpp"
-#include "mbedtls/sha1.h"
 #include "services/network/HttpServer.hpp"
 #include <cassert>
 
