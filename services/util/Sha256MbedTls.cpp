@@ -1,7 +1,6 @@
 #include "services/util/Sha256MbedTls.hpp"
-#include "infra/util/Compatibility.hpp"
-#include "mbedtls/sha256.h"
-#include "mbedtls/version.h"
+#include "infra/util/ReallyAssert.hpp"
+#include "psa/crypto.h"
 #include <cassert>
 
 #if MBEDTLS_VERSION_MAJOR < 3
@@ -10,12 +9,11 @@
 
 namespace services
 {
-    std::array<uint8_t, 32> Sha256MbedTls::Calculate(infra::ConstByteRange input) const
+    std::array<uint8_t, PSA_HASH_LENGTH(PSA_ALG_SHA_256)> Sha256MbedTls::Calculate(infra::ConstByteRange input) const
     {
-        std::array<uint8_t, 32> output;
+        std::array<uint8_t, PSA_HASH_LENGTH(PSA_ALG_SHA_256)> output;
 
-        EMIL_MAYBE_UNUSED auto result = mbedtls_sha256(input.begin(), input.size(), output.data(), 0);
-        assert(result == 0);
+        really_assert(psa_hash_compute(PSA_ALG_SHA_256, reinterpret_cast<const uint8_t*>(input.begin()), input.size(), output.data(), output.size(), nullptr) == PSA_SUCCESS);
 
         return output;
     }
