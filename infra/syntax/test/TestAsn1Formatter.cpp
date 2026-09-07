@@ -237,15 +237,17 @@ TEST(Asn1ObjectFormatter, add_constructed)
     EXPECT_EQ(constructedDer, stream.Storage());
 }
 
+#ifndef EMIL_MUTATION_TESTING
 TEST(Asn1ObjectFormatter, add_constructed_unintentional)
 {
-    infra::ByteOutputStream::WithStorage<2> stream;
+    infra::ByteOutputStream::WithStorage<3> stream;
     infra::Asn1Formatter formatter(stream);
 
-    auto constructedUnintentional = std::array<uint8_t, 10>{ 0x00, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
+    auto primitiveDer = std::array<uint8_t, 3>{ 0x02, 0x01, 0x01 };
 
-    EXPECT_DEATH(formatter.AddConstructed(constructedUnintentional), ".*");
+    EXPECT_DEATH(formatter.AddConstructed(primitiveDer), ".*");
 }
+#endif
 
 TEST(Asn1ObjectFormatter, start_sequence)
 {
