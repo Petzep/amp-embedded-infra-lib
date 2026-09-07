@@ -231,10 +231,10 @@ TEST(Asn1ObjectFormatter, add_constructed)
     infra::Asn1Formatter formatter(stream);
 
     // Example DER array
-    auto constructed_der = std::array<uint8_t, 10>{ 0x20, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
-    formatter.AddConstructed(constructed_der);
+    auto constructedDer = std::array<uint8_t, 10>{ 0x20, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
+    formatter.AddConstructed(constructedDer);
 
-    EXPECT_EQ(constructed_der, stream.Storage());
+    EXPECT_EQ(constructedDer, stream.Storage());
 }
 
 TEST(Asn1ObjectFormatter, add_constructed_unintentional)
@@ -242,9 +242,9 @@ TEST(Asn1ObjectFormatter, add_constructed_unintentional)
     infra::ByteOutputStream::WithStorage<2> stream;
     infra::Asn1Formatter formatter(stream);
 
-    auto constructed_unintentional = std::array<uint8_t, 10>{ 0x00, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
+    auto constructedUnintentional = std::array<uint8_t, 10>{ 0x00, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
 
-    EXPECT_DEATH(formatter.AddConstructed(constructed_unintentional), ".*");
+    EXPECT_DEATH(formatter.AddConstructed(constructedUnintentional), ".*");
 }
 
 TEST(Asn1ObjectFormatter, start_sequence)
