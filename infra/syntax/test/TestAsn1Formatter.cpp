@@ -230,7 +230,6 @@ TEST(Asn1ObjectFormatter, add_constructed)
     infra::ByteOutputStream::WithStorage<10> stream;
     infra::Asn1Formatter formatter(stream);
 
-    // Example DER array
     auto constructedDer = std::array<uint8_t, 10>{ 0x20, 0x08, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01 };
     formatter.AddConstructed(constructedDer);
 
